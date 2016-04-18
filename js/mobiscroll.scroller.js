@@ -455,6 +455,7 @@
 
             if (fill && input) {
                 preventChange = true;
+                $(elm).attr("areaid",v);
                 elm.val(va).change();
             }
         }
