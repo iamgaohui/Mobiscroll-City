@@ -711,6 +711,8 @@
         * @param {Boolean} prevAnim - Prevent animation if true
         */
         that.show = function (prevAnim) {
+        	var flag=0;
+        	if($("[role='dialog']").length==0){
             if (s.disabled || visible) {
                 return;
             }
@@ -774,9 +776,9 @@
 
             dw = $(html);
             persp = $('.dw-persp', dw);
-            overlay = $('.dwo', dw);
-            if(s.valueo){
-            	var val = s.valueo.split(" ");
+            overlay = $('.dwo', dw);           
+            if($(elm).attr("areaid")){
+            	var val = $(elm).attr("areaid").split(" ");
             	for(var i in val){
             		that.temp[i]=val[i]
             	}
@@ -788,8 +790,8 @@
             event('onMarkupReady', [dw]);
 
             // Show
-            if (modal) {
-
+            if (modal) {   
+            	flag++;         	
                 dw.appendTo(s.context);
                 if (anim && !prevAnim) {
                     dw.addClass('dw-trans');
@@ -798,12 +800,16 @@
                         dw.removeClass('dw-trans').find('.dw').removeClass(mAnim);
                     }, 350);
                 }
-            } else if (elm.is('div')) {
-                elm.html(dw);
-            } else {
-                dw.insertAfter(elm);
             }
-
+        }else{
+        	$("[role='dialog']").show()
+        }
+            // else if (elm.is('div')) {
+            //     elm.html(dw);
+            // } else {
+            //     dw.insertAfter(elm);
+            // }
+            if(flag!=0){
             event('onMarkupInserted', [dw]);
 
             visible = true;
@@ -878,6 +884,7 @@
             }, 300);
 
             event('onShow', [dw, v]);
+        }            
         };
 
         /**
@@ -885,9 +892,9 @@
         */
         that.hide = function (prevAnim, btn, force) {
             // If onClose handler returns false, prevent hide
-            if (!visible || (!force && event('onClose', [v, btn]) === false)) {
-                return;
-            }
+            // if (!visible || (!force && event('onClose', [v, btn]) === false)) {
+            //     return;
+            // }
 
             // Re-enable temporary disabled fields
             $('.dwtd', doc).each(function () {
@@ -906,10 +913,10 @@
                     dw.addClass('dw-trans').find('.dw').addClass('dw-' + anim + ' dw-out');
                 }
                 if (prevAnim) {
-                    dw.remove();
+                    dw.hide();
                 } else {
                     setTimeout(function () {
-                        dw.remove();
+                        dw.hide();
                         if (activeElm) {
                             preventShow = true;
                             activeElm.focus();
@@ -962,7 +969,7 @@
         * Cancel and hide the scroller instance.
         */
         that.cancel = function () {
-            if (that.hide(false, 'cancel') !== false) {
+            if (that.hide(true, 'cancel') !== false) {
                 event('onCancel', [that.val]);
             }
         };
